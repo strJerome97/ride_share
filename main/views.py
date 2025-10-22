@@ -25,21 +25,17 @@ class RideViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
     ordering_fields = ['pickup_time']
 
+    def get_queryset(self):
+        now = timezone.now()
+        last_24_hours = now - timedelta(hours=24)
+        ride_events_within_24_hours = RideEvent.objects.filter(created_at__gte=last_24_hours)
+        values = Ride.objects.select_related('id_rider', 'id_driver').prefetch_related(
+            Prefetch("events", queryset=ride_events_within_24_hours, to_attr="todays_ride_events")
+        )
+        return values
+
 class RideEventViewSet(viewsets.ModelViewSet):
     queryset = RideEvent.objects.all()
     serializer_class = RideEventSerializer
     pagination_class = DefaultPagination
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
-
-    def get_queryset(self):
-        now = timezone.now()
-        last_24_hours = now - timedelta(hours=24)
-        
-        ride_events_within_24_hours = RideEvent.objects.filter(created_at__gte=last_24_hours)
-        
-        # values = Ride.objects.select_related('id_rider', 'id_driver').prefetch_related(
-        #     Prefetch("events", queryset=ride_events_within_24_hours, to_attr="todays_ride_events")
-        # )
-        
-        print(str(ride_events_within_24_hours.values()))
-        return ride_events_within_24_hours

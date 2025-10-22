@@ -7,13 +7,17 @@ class UserSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class RideSerializer(serializers.ModelSerializer):
+    todays_ride_events = serializers.SerializerMethodField()
+    
     class Meta:
         model = Ride
         fields = '__all__'
         
+    def get_todays_ride_events(self, obj):
+        events = getattr(obj, 'todays_ride_events', [])
+        return RideEventSerializer(events, many=True).data
+        
 class RideEventSerializer(serializers.ModelSerializer):
-    # todays_ride_events = serializers.SerializerMethodField()
-    
     class Meta:
         model = RideEvent
         fields = [
@@ -21,10 +25,5 @@ class RideEventSerializer(serializers.ModelSerializer):
             "id_ride",
             "description",
             "created_at",
-            # "todays_ride_events"
-            ]
-        
-    # def get_todays_ride_events(self, obj):
-    #     events = getattr(obj, 'todays_ride_events', [])
-    #     return RideEventSerializer(events, many=True).data
+        ]
 
