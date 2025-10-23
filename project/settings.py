@@ -46,6 +46,9 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'main.pagination.DefaultPagination',
     'PAGE_SIZE': 10,
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
+    # 'DEFAULT_AUTHENTICATION_CLASSES': [
+    #     'main.authentication.AuthenticateUser',
+    # ],
 }
 
 MIDDLEWARE = [
