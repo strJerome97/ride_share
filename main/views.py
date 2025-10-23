@@ -59,8 +59,8 @@ class RideViewSet(viewsets.ModelViewSet):
             try:
                 lat = float(lat)
                 lon = float(lon)
-            except ValueError:
-                raise exceptions.ValidationError("Invalid latitude or longitude format.")
+            except (ValueError, TypeError) as e:
+                raise exceptions.ValidationError(f"Invalid coordinates: {e}")
             
             values = values.annotate(
                 distance=haversine_distance_expression('pickup_latitude', 'pickup_longitude', lat, lon)

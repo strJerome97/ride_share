@@ -5,7 +5,6 @@ from .models import User
 class AuthenticateUser(authentication.BaseAuthentication):
     def authenticate(self, request):
         email = request.headers.get('X-User-Email')
-        print(email)
         if not email:
             raise exceptions.AuthenticationFailed('No email header provided')
         try:
