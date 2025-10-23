@@ -7,6 +7,9 @@ class UserSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class RideSerializer(serializers.ModelSerializer):
+    rider = UserSerializer(source='id_rider', read_only=True)
+    driver = UserSerializer(source='id_driver', read_only=True)
+    distance = serializers.FloatField(read_only=True)
     todays_ride_events = serializers.SerializerMethodField()
     
     class Meta:
