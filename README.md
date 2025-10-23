@@ -387,3 +387,42 @@ This project is currently unlicensed. Consider adding an appropriate license for
 ---
 
 **Note**: This project is in active development. The authentication system needs immediate attention before production deployment.
+
+---
+**FOR BONUS PART**
+
+WITH pickup_dropoff_times AS (
+    SELECT
+        r.id_ride,
+        r.id_driver_id,
+		u.first_name,
+		u.last_name,
+        MIN(CASE WHEN e.description = 'Status changed to pickup' THEN e.created_at END) AS pickup_time,
+        MIN(CASE WHEN e.description = 'Status changed to dropoff' THEN e.created_at END) AS dropoff_time
+    FROM
+        main_ride r
+        JOIN main_rideevent e ON e.id_ride_id = r.id_ride
+		JOIN main_user u ON u.id_user = r.id_driver_id
+    WHERE
+        e.description IN ('Status changed to pickup', 'Status changed to dropoff')
+    GROUP BY
+        r.id_ride, r.id_driver_id, u.first_name, u.last_name
+)
+SELECT
+    TO_CHAR(DATE_TRUNC('month', pickup_time), 'YYYY-MM') AS Month,
+    first_name || ' ' || UPPER(SUBSTRING(last_name, 1, 1)) AS Driver,
+    COUNT(*) AS "Count of Trips > 1 hr"
+FROM
+    pickup_dropoff_times
+WHERE
+    pickup_time IS NOT NULL
+    AND dropoff_time IS NOT NULL
+    AND EXTRACT(EPOCH FROM (dropoff_time - pickup_time)) / 3600 > 1
+GROUP BY
+    first_name,
+	last_name,
+    TO_CHAR(DATE_TRUNC('month', pickup_time), 'YYYY-MM')
+ORDER BY
+    month,
+    first_name,
+	last_name;

@@ -14,19 +14,7 @@ class RideSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Ride
-        fields = [
-            "id_ride",
-            "status",
-            "distance",
-            "pickup_time",
-            "todays_ride_events",
-            "rider",
-            "driver",
-            "pickup_latitude",
-            "pickup_longitude",
-            "dropoff_latitude",
-            "dropoff_longitude",
-        ]
+        fields = '__all__'
         
     def get_todays_ride_events(self, obj):
         events = getattr(obj, 'todays_ride_events', [])
